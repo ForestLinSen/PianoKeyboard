@@ -11,7 +11,7 @@ public protocol PianoKeyViewModelDelegateProtocol {
     var noteOffset: Int { get }
 }
 
-public struct PianoKeyViewModel: Identifiable {
+public struct PianoKeyViewModel: Identifiable, Hashable {
     let keyIndex: Int
     let delegate: PianoKeyViewModelDelegateProtocol
     public var touchDown = false
@@ -33,8 +33,12 @@ public struct PianoKeyViewModel: Identifiable {
         let k = noteNumber % 12
         return (k == 0 || k == 2 || k == 4 || k == 5 || k == 7 || k == 9 || k == 11)
     }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
 
-    static func == (lhs: PianoKeyViewModel, rhs: PianoKeyViewModel) -> Bool {
+    public static func == (lhs: PianoKeyViewModel, rhs: PianoKeyViewModel) -> Bool {
         lhs.id == rhs.id
     }
 }

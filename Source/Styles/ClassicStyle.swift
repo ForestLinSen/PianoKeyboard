@@ -33,11 +33,11 @@ public struct ClassicStyle: KeyboardStyle {
     }
 
     public func naturalColor(_ down: Bool) -> Color {
-        down ? Color(red: 0.6, green: 0.6, blue: 0.6) : Color(red: 0.9, green: 0.9, blue: 0.9)
+        down ? Color(.systemPurple) : Color(red: 0.9, green: 0.9, blue: 0.9)
     }
 
     public func sharpFlatColor(_ down: Bool) -> Color {
-        down ? Color(red: 0.4, green: 0.4, blue: 0.4) : Color(red: 0.5, green: 0.5, blue: 0.5)
+        down ? Color(.systemPurple) : Color(red: 0.5, green: 0.5, blue: 0.5)
     }
 
     public func labelColor(_ noteNumber: Int) -> Color {
