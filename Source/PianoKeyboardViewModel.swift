@@ -64,55 +64,48 @@ public class PianoKeyboardViewModel: ObservableObject, PianoKeyViewModelDelegate
     private func updateKeys() {
         var keyDownAt = Array(repeating: false, count: numberOfKeys)
         
+        // Only mark which keys are being touched - don't modify selectedKeys here
         for touch in touches {
             if let index = getKeyContaining(touch) {
                 keyDownAt[index] = true
-                
-                // Selected keys
-                if latch {
-                    if let indexToRemove = selectedKeys.firstIndex(of: keys[index]) {
-                        selectedKeys.remove(at: indexToRemove)
-                    }else {
-                        selectedKeys.append(keys[index])
-                    }
-                }
             }
         }
         
         for index in 0..<numberOfKeys {
             let noteNumber = keys[index].noteNumber
             
+            // Only process when key state CHANGES
             if keys[index].touchDown != keyDownAt[index] {
                 if latch {
                     let keyLatched = keys[index].latched
                     
-                    
                     if keyDownAt[index] && keyLatched {
+                        // Key is being pressed and was already latched - unlatch it
                         delegate?.pianoKeyUp(noteNumber)
                         keys[index].latched = false
                         keys[index].touchDown = false
-                        
+                        // Remove from selectedKeys when unlatching
+                        selectedKeys.removeAll { $0.noteNumber == noteNumber }
                     }
                     if keyDownAt[index] && !keyLatched {
+                        // Key is being pressed and was not latched - latch it
                         delegate?.pianoKeyDown(noteNumber)
                         keys[index].latched = true
                         keys[index].touchDown = true
-                        
+                        // Add to selectedKeys when latching (avoid duplicates)
+                        if !selectedKeys.contains(where: { $0.noteNumber == noteNumber }) {
+                            selectedKeys.append(keys[index])
+                        }
                     }
                     
                 } else {
+                    // Non-latch mode (play mode)
                     if keyDownAt[index] {
                         delegate?.pianoKeyDown(noteNumber)
                     } else {
                         delegate?.pianoKeyUp(noteNumber)
                     }
                     keys[index].touchDown = keyDownAt[index]
-                }
-            } else {
-                if keys[index].touchDown && keyDownAt[index] && keys[index].latched {
-                    delegate?.pianoKeyUp(noteNumber)
-                    keys[index].latched = false
-                    keys[index].touchDown = false
                 }
             }
         }
